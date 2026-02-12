@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: creator_os
+    ports: ['5432:5432']
+  redis:
+    image: redis:7
+    ports: ['6379:6379']
+  api:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    env_file: ../.env
+    ports: ['8000:8000']
+    depends_on: [db, redis]
+  worker:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    env_file: ../.env
+    command: celery -A app.tasks.celery_app.celery_app worker --loglevel=info
+    depends_on: [db, redis]
+  web:
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    ports: ['3000:3000']
+    depends_on: [api]
