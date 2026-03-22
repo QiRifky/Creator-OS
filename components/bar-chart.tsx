@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, type LayoutChangeEvent } from 'react-native';
-import Svg, { Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Rect, Text as SvgText, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Animated, { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing } from 'react-native-reanimated';
 import { Fonts } from '@/constants/Typography';
 import { useTheme } from '@/components/theme-context';
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 interface BarChartData {
   label: string;
@@ -15,12 +18,55 @@ interface BarChartProps {
   title?: string;
 }
 
+function AnimatedBar({
+  x,
+  maxBarHeight,
+  barWidth,
+  value,
+  maxValue,
+  index,
+}: {
+  x: number;
+  maxBarHeight: number;
+  barWidth: number;
+  value: number;
+  maxValue: number;
+  index: number;
+}) {
+  const targetHeight = Math.max((value / maxValue) * maxBarHeight, value > 0 ? 4 : 0);
+  const barHeight = useSharedValue(0);
+
+  useEffect(() => {
+    barHeight.value = withDelay(
+      index * 80,
+      withTiming(targetHeight, { duration: 700, easing: Easing.out(Easing.cubic) })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetHeight]);
+
+  const animatedProps = useAnimatedProps(() => ({
+    height: barHeight.value,
+    y: maxBarHeight - barHeight.value,
+  }));
+
+  return (
+    <AnimatedRect
+      x={x}
+      width={barWidth}
+      rx={barWidth / 2.5}
+      fill="url(#barGrad)"
+      animatedProps={animatedProps}
+    />
+  );
+}
+
 export function BarChart({ data, height = 160, title }: BarChartProps) {
   const { colors } = useTheme();
   const [chartWidth, setChartWidth] = useState(0);
   const maxValue = Math.max(...data.map((d) => d.value), 1);
   const chartPadding = 6;
-  const chartHeight = height - 28;
+  const labelHeight = 28;
+  const maxBarHeight = height - labelHeight - 20;
 
   const handleLayout = (e: LayoutChangeEvent) => {
     setChartWidth(e.nativeEvent.layout.width);
@@ -55,32 +101,32 @@ export function BarChart({ data, height = 160, title }: BarChartProps) {
       )}
       {chartWidth > 0 && (
         <Svg width={chartWidth} height={height}>
+          <Defs>
+            <LinearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="0%" stopColor="#8B5CF6" />
+              <Stop offset="100%" stopColor="#6C63FF" />
+            </LinearGradient>
+          </Defs>
           {data.map((item, i) => {
-            const barHeight = Math.max(
-              (item.value / maxValue) * (chartHeight - 18),
-              item.value > 0 ? 4 : 0
-            );
             const x =
               chartPadding +
               (i * (chartWidth - chartPadding * 2)) / data.length +
               ((chartWidth - chartPadding * 2) / data.length - barWidth) / 2;
-            const y = chartHeight - barHeight;
 
             return (
               <React.Fragment key={item.label}>
-                <Rect
+                <AnimatedBar
                   x={x}
-                  y={y}
-                  width={barWidth}
-                  height={barHeight}
-                  rx={5}
-                  fill={colors.primary}
-                  opacity={0.9}
+                  maxBarHeight={maxBarHeight}
+                  barWidth={barWidth}
+                  value={item.value}
+                  maxValue={maxValue}
+                  index={i}
                 />
                 {item.value > 0 && (
                   <SvgText
                     x={x + barWidth / 2}
-                    y={y - 5}
+                    y={maxBarHeight - (item.value / maxValue) * maxBarHeight - 6}
                     fill={colors.textSecondary}
                     fontSize={9}
                     fontFamily={Fonts.semiBold}

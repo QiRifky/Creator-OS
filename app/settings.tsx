@@ -133,12 +133,14 @@ export default function SettingsScreen() {
     children: React.ReactNode;
     delay?: number;
   }) => (
-    <Animated.View entering={FadeInDown.delay(delay).duration(400)} style={{ gap: 14 }}>
+    <Animated.View entering={FadeInDown.delay(delay).duration(400)} style={{ gap: 12 }}>
       <Text
         style={{
-          fontFamily: Fonts.semiBold,
+          fontFamily: Fonts.bold,
           fontSize: 17,
           color: colors.textPrimary,
+          letterSpacing: -0.2,
+          marginLeft: 4,
         }}
       >
         {title}
@@ -146,12 +148,13 @@ export default function SettingsScreen() {
       <View
         style={{
           backgroundColor: colors.card,
-          borderRadius: 18,
+          borderRadius: 20,
           borderCurve: 'continuous',
-          padding: 18,
+          padding: 20,
           borderWidth: 1,
           borderColor: colors.border,
-          gap: 14,
+          gap: 16,
+          boxShadow: mode === 'dark' ? '0 2px 12px rgba(0,0,0,0.2)' : colors.cardShadow,
         }}
       >
         {children}
@@ -181,27 +184,27 @@ export default function SettingsScreen() {
         >
           {/* Profile */}
           <Section title="Profile" delay={0}>
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 20,
-                borderCurve: 'continuous',
-                backgroundColor: colors.primaryMuted,
-                alignItems: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-              }}
-            >
-              <Text
+            <View style={{ alignItems: 'center', alignSelf: 'center' }}>
+              {mode === 'dark' && (
+                <View style={{ position: 'absolute', width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primaryGlow, opacity: 0.15 }} />
+              )}
+              <View
                 style={{
-                  fontFamily: Fonts.bold,
-                  fontSize: 26,
-                  color: colors.primary,
+                  width: 68,
+                  height: 68,
+                  borderRadius: 22,
+                  borderCurve: 'continuous',
+                  backgroundColor: colors.primaryMuted,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 2,
+                  borderColor: colors.primary + '30',
                 }}
               >
-                {(user?.displayName || user?.username || 'U')[0].toUpperCase()}
-              </Text>
+                <Text style={{ fontFamily: Fonts.bold, fontSize: 28, color: colors.primary }}>
+                  {(user?.displayName || user?.username || 'U')[0].toUpperCase()}
+                </Text>
+              </View>
             </View>
             <Input
               label="Display Name"

@@ -33,8 +33,8 @@ export function AnimatedCounter({
     const animate = () => {
       const elapsed = Date.now() - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
+      // Smooth ease-out quartic for premium feel
+      const eased = 1 - Math.pow(1 - progress, 4);
       const current =
         startValueRef.current + (value - startValueRef.current) * eased;
 
@@ -64,6 +64,7 @@ export function AnimatedCounter({
           fontSize: 32,
           color: colors.textPrimary,
           fontVariant: ['tabular-nums'],
+          letterSpacing: -0.8,
         },
         style,
       ]}

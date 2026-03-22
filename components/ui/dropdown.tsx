@@ -33,14 +33,14 @@ export function Dropdown({
   onChange,
   error,
 }: DropdownProps) {
-  const { colors } = useTheme();
+  const { colors, mode } = useTheme();
   const [visible, setVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   const selectedOption = options.find((o) => o.value === value);
 
   return (
-    <View style={{ gap: 6 }}>
+    <View style={{ gap: 7 }}>
       {label && (
         <Text
           style={{
@@ -48,6 +48,7 @@ export function Dropdown({
             fontSize: 13,
             color: colors.textSecondary,
             marginLeft: 2,
+            letterSpacing: 0.1,
           }}
         >
           {label}
@@ -55,18 +56,19 @@ export function Dropdown({
       )}
       <Pressable
         onPress={() => setVisible(true)}
-        style={{
+        style={({ pressed }) => ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: colors.inputBackground,
-          borderRadius: 12,
+          backgroundColor: mode === 'dark' ? colors.surface : colors.inputBackground,
+          borderRadius: 14,
           borderCurve: 'continuous',
           borderWidth: 1.5,
           borderColor: error ? colors.error : colors.inputBorder,
-          paddingHorizontal: 14,
-          paddingVertical: 14,
-        }}
+          paddingHorizontal: 16,
+          paddingVertical: 15,
+          opacity: pressed ? 0.85 : 1,
+        })}
       >
         <Text
           style={{
@@ -87,7 +89,7 @@ export function Dropdown({
         <Text
           selectable
           style={{
-            fontFamily: Fonts.regular,
+            fontFamily: Fonts.medium,
             fontSize: 12,
             color: colors.error,
             marginLeft: 2,
@@ -114,37 +116,36 @@ export function Dropdown({
           <Pressable
             onPress={() => {}}
             style={{
-              backgroundColor: colors.card,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
+              backgroundColor: mode === 'dark' ? colors.cardElevated : colors.card,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
               borderCurve: 'continuous',
               paddingBottom: insets.bottom + 8,
-              maxHeight: '60%',
+              maxHeight: '55%',
+              borderTopWidth: 1,
+              borderColor: colors.border,
             }}
           >
-            <View
-              style={{
-                alignItems: 'center',
-                paddingVertical: 12,
-              }}
-            >
+            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
               <View
                 style={{
-                  width: 36,
+                  width: 40,
                   height: 4,
                   borderRadius: 2,
-                  backgroundColor: colors.border,
+                  backgroundColor: colors.textTertiary,
+                  opacity: 0.4,
                 }}
               />
             </View>
             {label && (
               <Text
                 style={{
-                  fontFamily: Fonts.semiBold,
-                  fontSize: 16,
+                  fontFamily: Fonts.bold,
+                  fontSize: 17,
                   color: colors.textPrimary,
-                  paddingHorizontal: 20,
-                  paddingBottom: 12,
+                  paddingHorizontal: 24,
+                  paddingBottom: 14,
+                  letterSpacing: -0.2,
                 }}
               >
                 {label}
@@ -161,24 +162,24 @@ export function Dropdown({
                       onChange(item.value);
                       setVisible(false);
                     }}
-                    style={{
+                    style={({ pressed }) => ({
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      paddingHorizontal: 20,
-                      paddingVertical: 14,
+                      paddingHorizontal: 24,
+                      paddingVertical: 15,
                       backgroundColor: isSelected
                         ? colors.primaryMuted
+                        : pressed
+                        ? colors.borderSubtle
                         : 'transparent',
-                    }}
+                    })}
                   >
                     <Text
                       style={{
                         fontFamily: isSelected ? Fonts.semiBold : Fonts.regular,
                         fontSize: 16,
-                        color: isSelected
-                          ? colors.primary
-                          : colors.textPrimary,
+                        color: isSelected ? colors.primary : colors.textPrimary,
                       }}
                     >
                       {item.label}

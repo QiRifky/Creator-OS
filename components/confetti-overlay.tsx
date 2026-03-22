@@ -5,11 +5,12 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withDelay,
+  withSpring,
   Easing,
 } from 'react-native-reanimated';
 
-const CONFETTI_COLORS = ['#6C63FF', '#00D4AA', '#FFD700', '#FF6B6B', '#FFB347', '#00C896', '#E1306C'];
-const PARTICLE_COUNT = 40;
+const CONFETTI_COLORS = ['#6C63FF', '#8B5CF6', '#00D4AA', '#FFD700', '#FF6B6B', '#FFB347', '#00C896', '#F06292', '#5B9BF5'];
+const PARTICLE_COUNT = 55;
 
 interface Particle {
   id: number;
@@ -18,36 +19,39 @@ interface Particle {
   size: number;
   delay: number;
   rotation: number;
+  isCircle: boolean;
 }
 
 function ConfettiParticle({ particle, screenHeight }: { particle: Particle; screenHeight: number }) {
-  const translateY = useSharedValue(-50);
+  const translateY = useSharedValue(-60);
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
   const rotate = useSharedValue(0);
+  const scale = useSharedValue(0);
 
   useEffect(() => {
-    const drift = (Math.random() - 0.5) * 120;
+    const drift = (Math.random() - 0.5) * 160;
+    const dur = 2200 + Math.random() * 1200;
+
+    // Pop in
+    scale.value = withDelay(particle.delay, withSpring(1, { damping: 8, stiffness: 200 }));
+
     translateY.value = withDelay(
       particle.delay,
-      withTiming(screenHeight + 100, {
-        duration: 2500 + Math.random() * 1000,
-        easing: Easing.in(Easing.quad),
-      })
+      withTiming(screenHeight + 80, { duration: dur, easing: Easing.in(Easing.quad) })
     );
     translateX.value = withDelay(
       particle.delay,
-      withTiming(drift, { duration: 2500 + Math.random() * 1000 })
+      withTiming(drift, { duration: dur })
     );
     opacity.value = withDelay(
-      particle.delay + 1800,
-      withTiming(0, { duration: 800 })
+      particle.delay + dur * 0.65,
+      withTiming(0, { duration: dur * 0.35 })
     );
     rotate.value = withDelay(
       particle.delay,
-      withTiming(particle.rotation * 360, { duration: 2500 })
+      withTiming(particle.rotation * 720, { duration: dur })
     );
-    // Intentionally run only on mount for each particle
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,6 +60,7 @@ function ConfettiParticle({ particle, screenHeight }: { particle: Particle; scre
       { translateY: translateY.value },
       { translateX: translateX.value },
       { rotate: `${rotate.value}deg` },
+      { scale: scale.value },
     ],
     opacity: opacity.value,
   }));
@@ -66,11 +71,11 @@ function ConfettiParticle({ particle, screenHeight }: { particle: Particle; scre
         {
           position: 'absolute',
           left: particle.x,
-          top: -20,
+          top: -30,
           width: particle.size,
-          height: particle.size * 0.6,
+          height: particle.isCircle ? particle.size : particle.size * 0.55,
           backgroundColor: particle.color,
-          borderRadius: 2,
+          borderRadius: particle.isCircle ? particle.size / 2 : 2,
         },
         animatedStyle,
       ]}
@@ -94,9 +99,10 @@ export function ConfettiOverlay({ visible, onComplete }: ConfettiOverlayProps) {
         id: i,
         x: Math.random() * width,
         color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        size: 8 + Math.random() * 8,
-        delay: Math.random() * 600,
-        rotation: 2 + Math.random() * 4,
+        size: 6 + Math.random() * 10,
+        delay: Math.random() * 500,
+        rotation: 1 + Math.random() * 3,
+        isCircle: Math.random() > 0.6,
       }));
       setParticles(newParticles);
       setShow(true);
@@ -105,7 +111,7 @@ export function ConfettiOverlay({ visible, onComplete }: ConfettiOverlayProps) {
         setShow(false);
         setParticles([]);
         onComplete?.();
-      }, 3500);
+      }, 3800);
 
       return () => clearTimeout(timer);
     }

@@ -22,8 +22,9 @@ const STATUS_ICONS: Record<ContestStatus, keyof typeof Ionicons.glyphMap> = {
 };
 
 export default function PortfolioScreen() {
-  const { colors } = useTheme();
+  const { colors, mode } = useTheme();
   const insets = useSafeAreaInsets();
+  const isDark = mode === 'dark';
   const getUserContests = useAppStore((s) => s.getUserContests);
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -89,14 +90,15 @@ export default function PortfolioScreen() {
     value: string;
     color?: string;
   }) => (
-    <View style={{ flex: 1, alignItems: 'center', gap: 4 }}>
+    <View style={{ flex: 1, alignItems: 'center', gap: 5 }}>
       <Text
         selectable
         style={{
           fontFamily: Fonts.extraBold,
-          fontSize: 20,
+          fontSize: 22,
           color: color || colors.textPrimary,
           fontVariant: ['tabular-nums'],
+          letterSpacing: -0.5,
         }}
       >
         {value}
@@ -104,8 +106,10 @@ export default function PortfolioScreen() {
       <Text
         style={{
           fontFamily: Fonts.medium,
-          fontSize: 11,
+          fontSize: 10,
           color: colors.textTertiary,
+          letterSpacing: 0.5,
+          textTransform: 'uppercase',
         }}
       >
         {label}
@@ -148,11 +152,12 @@ export default function PortfolioScreen() {
           style={{
             flexDirection: 'row',
             backgroundColor: colors.card,
-            borderRadius: 18,
+            borderRadius: 20,
             borderCurve: 'continuous',
-            padding: 18,
+            padding: 20,
             borderWidth: 1,
             borderColor: colors.border,
+            boxShadow: isDark ? '0 2px 16px rgba(0,0,0,0.3)' : colors.cardShadow,
           }}
         >
           <SummaryItem label="Wins" value={`${stats.wins}`} color={colors.success} />
@@ -175,11 +180,12 @@ export default function PortfolioScreen() {
           <View
             style={{
               backgroundColor: colors.card,
-              borderRadius: 18,
+              borderRadius: 20,
               borderCurve: 'continuous',
               borderWidth: 1,
               borderColor: colors.border,
               overflow: 'hidden',
+              boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.2)' : colors.cardShadow,
             }}
           >
             {STATUSES.map((status, idx) => {
@@ -251,12 +257,13 @@ export default function PortfolioScreen() {
             style={{
               flex: 1,
               backgroundColor: colors.card,
-              borderRadius: 18,
+              borderRadius: 20,
               borderCurve: 'continuous',
               padding: 18,
               borderWidth: 1,
               borderColor: colors.border,
               alignItems: 'center',
+              boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.2)' : colors.cardShadow,
             }}
           >
             <Text
@@ -277,11 +284,12 @@ export default function PortfolioScreen() {
             style={{
               flex: 1.5,
               backgroundColor: colors.card,
-              borderRadius: 18,
+              borderRadius: 20,
               borderCurve: 'continuous',
               padding: 18,
               borderWidth: 1,
               borderColor: colors.border,
+              boxShadow: isDark ? '0 2px 12px rgba(0,0,0,0.2)' : colors.cardShadow,
             }}
           >
             <Text

@@ -23,7 +23,7 @@ type SortOption = 'deadline' | 'newest' | 'prize';
 
 export default function FeedScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
+  const { colors, mode } = useTheme();
   const insets = useSafeAreaInsets();
   const getUserContests = useAppStore((s) => s.getUserContests);
 
@@ -97,18 +97,19 @@ export default function FeedScreen() {
       style={{
         paddingHorizontal: 14,
         paddingVertical: 7,
-        borderRadius: 20,
+        borderRadius: 10,
         borderCurve: 'continuous',
-        backgroundColor: active ? colors.primary : colors.card,
+        backgroundColor: active ? colors.primaryMuted : colors.card,
         borderWidth: 1,
-        borderColor: active ? colors.primary : colors.border,
+        borderColor: active ? colors.primary + '40' : colors.border,
       }}
     >
       <Text
         style={{
-          fontFamily: Fonts.medium,
+          fontFamily: Fonts.semiBold,
           fontSize: 12,
-          color: active ? '#FFFFFF' : colors.textSecondary,
+          color: active ? colors.primary : colors.textTertiary,
+          letterSpacing: 0.1,
         }}
       >
         {label}
@@ -133,12 +134,13 @@ export default function FeedScreen() {
             flexDirection: 'row',
             alignItems: 'center',
             backgroundColor: colors.card,
-            borderRadius: 14,
+            borderRadius: 16,
             borderCurve: 'continuous',
             borderWidth: 1,
             borderColor: colors.border,
-            paddingHorizontal: 14,
-            gap: 10,
+            paddingHorizontal: 16,
+            gap: 12,
+            boxShadow: mode === 'dark' ? '0 2px 12px rgba(0,0,0,0.2)' : colors.cardShadow,
           }}
         >
           <Ionicons name="search" size={18} color={colors.textTertiary} />

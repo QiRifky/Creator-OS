@@ -18,19 +18,20 @@ export function Input({
   isPassword,
   ...props
 }: InputProps) {
-  const { colors } = useTheme();
+  const { colors, mode } = useTheme();
   const [focused, setFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View style={{ gap: 6 }}>
+    <View style={{ gap: 7 }}>
       {label && (
         <Text
           style={{
             fontFamily: Fonts.medium,
             fontSize: 13,
-            color: colors.textSecondary,
+            color: focused ? colors.primary : colors.textSecondary,
             marginLeft: 2,
+            letterSpacing: 0.1,
           }}
         >
           {label}
@@ -40,8 +41,8 @@ export function Input({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: colors.inputBackground,
-          borderRadius: 12,
+          backgroundColor: mode === 'dark' ? colors.surface : colors.inputBackground,
+          borderRadius: 14,
           borderCurve: 'continuous',
           borderWidth: 1.5,
           borderColor: error
@@ -49,12 +50,19 @@ export function Input({
             : focused
             ? colors.primary
             : colors.inputBorder,
-          paddingHorizontal: 14,
-          gap: 10,
+          paddingHorizontal: 16,
+          gap: 12,
+          boxShadow: focused
+            ? `0 0 0 3px ${error ? colors.errorMuted : colors.primaryMuted}`
+            : undefined,
         }}
       >
         {icon && (
-          <Ionicons name={icon} size={18} color={colors.textTertiary} />
+          <Ionicons
+            name={icon}
+            size={18}
+            color={focused ? colors.primary : colors.textTertiary}
+          />
         )}
         <TextInput
           {...props}
@@ -73,7 +81,7 @@ export function Input({
             fontFamily: Fonts.regular,
             fontSize: 15,
             color: colors.textPrimary,
-            paddingVertical: 14,
+            paddingVertical: 15,
           }}
         />
         {isPassword && (
@@ -93,7 +101,7 @@ export function Input({
         <Text
           selectable
           style={{
-            fontFamily: Fonts.regular,
+            fontFamily: Fonts.medium,
             fontSize: 12,
             color: colors.error,
             marginLeft: 2,
